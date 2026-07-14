@@ -1,0 +1,320 @@
+{
+  "info": {
+    "name": "Academy Aziendale - API",
+    "description": "Collezione di test per la piattaforma Academy (Esame WEB DEVELOPER FULL STACK).\n\nUso rapido:\n1. Imposta la variabile di collezione `baseUrl` (default: backend su Render). Per il locale usa http://localhost:3000/api\n2. Esegui una richiesta di Login (Referente o Dipendente): il token viene salvato automaticamente in `accessToken` e usato da tutte le altre chiamate.\n3. Gli id (`corsoId`, `dipendenteId`, `assegnazioneId`) sono variabili con valori di esempio: aggiornali con quelli reali presi dalle liste.\n\nCredenziali di test:\n- Referente: referente@academy.it / Password1!\n- Dipendente: mario.rossi@academy.it / Password1!\n- Dipendente: laura.bianchi@academy.it / Password1!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://esamefinaleits.onrender.com/api" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "corsoId", "value": "1" },
+    { "key": "dipendenteId", "value": "2" },
+    { "key": "assegnazioneId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (Dipendente)",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuovo.dipendente@academy.it\",\n  \"password\": \"Password1!\",\n  \"confirm\": \"Password1!\",\n  \"nome\": \"Nuovo\",\n  \"cognome\": \"Dipendente\",\n  \"ruolo\": \"DIPENDENTE\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Register (Referente)",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuovo.referente@academy.it\",\n  \"password\": \"Password1!\",\n  \"confirm\": \"Password1!\",\n  \"nome\": \"Nuovo\",\n  \"cognome\": \"Referente\",\n  \"ruolo\": \"REFERENTE_ACADEMY\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login (Referente)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  console.log('Token referente salvato');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"referente@academy.it\",\n  \"password\": \"Password1!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Dipendente)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  console.log('Token dipendente salvato');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mario.rossi@academy.it\",\n  \"password\": \"Password1!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Refresh token",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Utenti",
+      "item": [
+        {
+          "name": "Profilo utente corrente",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/users/profile", "host": ["{{baseUrl}}"], "path": ["users", "profile"] }
+          }
+        },
+        {
+          "name": "Elenco dipendenti (solo referente)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Corsi",
+      "item": [
+        {
+          "name": "Lista corsi",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/corsi?categoria=&attivo=",
+              "host": ["{{baseUrl}}"],
+              "path": ["corsi"],
+              "query": [
+                { "key": "categoria", "value": "", "disabled": true },
+                { "key": "attivo", "value": "true", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dettaglio corso",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/corsi/{{corsoId}}", "host": ["{{baseUrl}}"], "path": ["corsi", "{{corsoId}}"] }
+          }
+        },
+        {
+          "name": "Crea corso (referente)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titolo\": \"Cybersecurity awareness\",\n  \"descrizione\": \"Buone pratiche di sicurezza informatica\",\n  \"categoria\": \"Sicurezza\",\n  \"durataOre\": 6,\n  \"obbligatorio\": true,\n  \"attivo\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/corsi", "host": ["{{baseUrl}}"], "path": ["corsi"] }
+          }
+        },
+        {
+          "name": "Modifica corso (referente)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"durataOre\": 8,\n  \"obbligatorio\": false\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/corsi/{{corsoId}}", "host": ["{{baseUrl}}"], "path": ["corsi", "{{corsoId}}"] }
+          }
+        },
+        {
+          "name": "Attiva/Disattiva corso (referente)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"attivo\": false\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/corsi/{{corsoId}}/changeStatus", "host": ["{{baseUrl}}"], "path": ["corsi", "{{corsoId}}", "changeStatus"] }
+          }
+        },
+        {
+          "name": "Elimina corso (referente)",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/corsi/{{corsoId}}", "host": ["{{baseUrl}}"], "path": ["corsi", "{{corsoId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assegnazioni",
+      "item": [
+        {
+          "name": "Lista assegnazioni",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/assegnazioni-corsi?stato=&categoria=&corsoId=&dipendenteId=",
+              "host": ["{{baseUrl}}"],
+              "path": ["assegnazioni-corsi"],
+              "query": [
+                { "key": "stato", "value": "Assegnato", "disabled": true },
+                { "key": "categoria", "value": "Sicurezza", "disabled": true },
+                { "key": "corsoId", "value": "{{corsoId}}", "disabled": true },
+                { "key": "dipendenteId", "value": "{{dipendenteId}}", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dettaglio assegnazione",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/assegnazioni-corsi/{{assegnazioneId}}", "host": ["{{baseUrl}}"], "path": ["assegnazioni-corsi", "{{assegnazioneId}}"] }
+          }
+        },
+        {
+          "name": "Crea assegnazione (referente)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"corsoId\": {{corsoId}},\n  \"dipendenteId\": {{dipendenteId}},\n  \"dataScadenza\": \"2026-12-31\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/assegnazioni-corsi", "host": ["{{baseUrl}}"], "path": ["assegnazioni-corsi"] }
+          }
+        },
+        {
+          "name": "Modifica assegnazione (referente)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dataScadenza\": \"2027-01-31\",\n  \"stato\": \"Assegnato\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/assegnazioni-corsi/{{assegnazioneId}}", "host": ["{{baseUrl}}"], "path": ["assegnazioni-corsi", "{{assegnazioneId}}"] }
+          }
+        },
+        {
+          "name": "Completa assegnazione (dipendente sulle proprie)",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/assegnazioni-corsi/{{assegnazioneId}}/completa", "host": ["{{baseUrl}}"], "path": ["assegnazioni-corsi", "{{assegnazioneId}}", "completa"] }
+          }
+        },
+        {
+          "name": "Annulla assegnazione (referente)",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/assegnazioni-corsi/{{assegnazioneId}}/annulla", "host": ["{{baseUrl}}"], "path": ["assegnazioni-corsi", "{{assegnazioneId}}", "annulla"] }
+          }
+        },
+        {
+          "name": "Elimina assegnazione (referente)",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/assegnazioni-corsi/{{assegnazioneId}}", "host": ["{{baseUrl}}"], "path": ["assegnazioni-corsi", "{{assegnazioneId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistiche",
+      "item": [
+        {
+          "name": "Riepilogo academy (solo referente)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/statistiche/academy?mese=&categoria=&dipendenteId=",
+              "host": ["{{baseUrl}}"],
+              "path": ["statistiche", "academy"],
+              "query": [
+                { "key": "mese", "value": "2026-05", "disabled": true },
+                { "key": "categoria", "value": "Sicurezza", "disabled": true },
+                { "key": "dipendenteId", "value": "{{dipendenteId}}", "disabled": true }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
