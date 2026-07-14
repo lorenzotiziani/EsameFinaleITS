@@ -1,1 +1,53 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* ===== Palette viola: sostituisce il "primary" blu di Bootstrap in tutta l'app ===== */
+:root {
+  --bs-primary: #7c3aed;
+  --bs-primary-rgb: 124, 58, 237;
+
+  --bs-link-color: #7c3aed;
+  --bs-link-color-rgb: 124, 58, 237;
+  --bs-link-hover-color: #6d28d9;
+  --bs-link-hover-color-rgb: 109, 40, 217;
+}
+
+/* Bottoni pieni */
+.btn-primary {
+  --bs-btn-bg: #7c3aed;
+  --bs-btn-border-color: #7c3aed;
+  --bs-btn-hover-bg: #6d28d9;
+  --bs-btn-hover-border-color: #6d28d9;
+  --bs-btn-active-bg: #5b21b6;
+  --bs-btn-active-border-color: #5b21b6;
+  --bs-btn-disabled-bg: #c4b5fd;
+  --bs-btn-disabled-border-color: #c4b5fd;
+  --bs-btn-focus-shadow-rgb: 124, 58, 237;
+}
+
+/* Bottoni outline */
+.btn-outline-primary {
+  --bs-btn-color: #7c3aed;
+  --bs-btn-border-color: #7c3aed;
+  --bs-btn-hover-bg: #7c3aed;
+  --bs-btn-hover-border-color: #7c3aed;
+  --bs-btn-active-bg: #7c3aed;
+  --bs-btn-active-border-color: #7c3aed;
+  --bs-btn-focus-shadow-rgb: 124, 58, 237;
+}
+
+/* Focus dei campi form */
+.form-control:focus,
+.form-select:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 0.25rem rgba(124, 58, 237, 0.25);
+}
+
+/* Checkbox/radio selezionati */
+.form-check-input:checked {
+  background-color: #7c3aed;
+  border-color: #7c3aed;
+}
+.form-check-input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 0.25rem rgba(124, 58, 237, 0.25);
+}

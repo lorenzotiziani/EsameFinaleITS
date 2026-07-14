@@ -81,8 +81,16 @@ export class StatisticheComponent implements OnInit {
     this.barChartData = {
       labels: rows.map((r) => `${r.mese} · ${r.categoria}`),
       datasets: [
-        { label: 'Assegnati', data: rows.map((r) => r.numeroAssegnazioni) },
-        { label: 'Completati', data: rows.map((r) => r.numeroCompletamenti) },
+        {
+          label: 'Assegnati',
+          data: rows.map((r) => r.numeroAssegnazioni),
+          backgroundColor: 'rgba(124, 58, 237, 0.75)',
+        },
+        {
+          label: 'Completati',
+          data: rows.map((r) => r.numeroCompletamenti),
+          backgroundColor: 'rgba(16, 185, 129, 0.75)',
+        },
       ],
     };
   }

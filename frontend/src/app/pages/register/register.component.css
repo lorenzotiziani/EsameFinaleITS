@@ -25,7 +25,7 @@ body {
 .form-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #4338ca;
+  color: #5b21b6;
   margin-bottom: 6px;
 }
 
@@ -43,8 +43,8 @@ body {
 }
 
 .form-control:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
 }
 
 
@@ -56,7 +56,7 @@ body {
 
 
 .btn-primary {
-  background-color: #5b5bd6;
+  background-color: #7c3aed;
   border: none;
   border-radius: 10px;
   padding: 11px;
@@ -70,8 +70,8 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: #4f46e5;
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.25);
+  background-color: #6d28d9;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.25);
 }
 
 .btn-primary:active {
@@ -79,7 +79,7 @@ body {
 }
 
 .btn-primary:disabled {
-  background-color: #c7c5f5;
+  background-color: #c4b5fd;
   cursor: not-allowed;
   box-shadow: none;
 }
@@ -92,7 +92,7 @@ body {
 }
 
 .text-center a {
-  color: #5b5bd6;
+  color: #7c3aed;
   font-weight: 600;
   text-decoration: none;
 }
