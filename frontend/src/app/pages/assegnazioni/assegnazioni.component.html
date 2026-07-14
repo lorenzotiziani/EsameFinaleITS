@@ -1,0 +1,176 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Assegnazioni</h1>
+    <button class="btn btn-primary" (click)="openCreate()">+ Nuova assegnazione</button>
+  </div>
+
+  <!-- Filtri -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="f-stato">Stato</label>
+          <select id="f-stato" class="form-select" [(ngModel)]="filtroStato" (change)="load()">
+            <option value="">Tutti</option>
+            <option [ngValue]="Stato.Assegnato">Assegnato</option>
+            <option [ngValue]="Stato.Completato">Completato</option>
+            <option [ngValue]="Stato.Scaduto">Scaduto</option>
+            <option [ngValue]="Stato.Annullato">Annullato</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="f-cat">Categoria</label>
+          <select id="f-cat" class="form-select" [(ngModel)]="filtroCategoria" (change)="load()">
+            <option value="">Tutte</option>
+            @for (c of categorie; track c) {
+              <option [ngValue]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="f-corso">Corso</label>
+          <select id="f-corso" class="form-select" [(ngModel)]="filtroCorsoId" (change)="load()">
+            <option value="">Tutti</option>
+            @for (c of corsi; track c.id) {
+              <option [ngValue]="c.id">{{ c.titolo }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="f-dip">Dipendente</label>
+          <select id="f-dip" class="form-select" [(ngModel)]="filtroDipendenteId" (change)="load()">
+            <option value="">Tutti</option>
+            @for (d of dipendenti; track d.id) {
+              <option [ngValue]="d.id">{{ d.cognome }} {{ d.nome }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-outline-secondary" (click)="resetFiltri()">Azzera filtri</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form crea/modifica -->
+  @if (showForm) {
+    <div class="card mb-3 border-primary">
+      <div class="card-body">
+        <h5 class="card-title">{{ editing === null ? 'Nuova assegnazione' : 'Modifica assegnazione' }}</h5>
+
+        <div class="row g-3">
+          @if (editing === null) {
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="corso">Corso (attivo) *</label>
+              <select id="corso" class="form-select" [(ngModel)]="formModel.corsoId">
+                <option value="">Seleziona&hellip;</option>
+                @for (c of corsiAttivi; track c.id) {
+                  <option [ngValue]="c.id">{{ c.titolo }} ({{ c.categoria }})</option>
+                }
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="dip">Dipendente *</label>
+              <select id="dip" class="form-select" [(ngModel)]="formModel.dipendenteId">
+                <option value="">Seleziona&hellip;</option>
+                @for (d of dipendenti; track d.id) {
+                  <option [ngValue]="d.id">{{ d.cognome }} {{ d.nome }} — {{ d.email }}</option>
+                }
+              </select>
+            </div>
+          } @else {
+            <div class="col-12">
+              <p class="mb-1"><strong>Corso:</strong> {{ editing.corso?.titolo }}</p>
+              <p class="mb-0">
+                <strong>Dipendente:</strong>
+                {{ editing.dipendente?.cognome }} {{ editing.dipendente?.nome }}
+              </p>
+            </div>
+          }
+
+          <div class="col-12 col-md-4">
+            <label class="form-label" for="scadenza">Data scadenza *</label>
+            <input id="scadenza" type="date" class="form-control" [(ngModel)]="formModel.dataScadenza" />
+          </div>
+
+          @if (editing === null) {
+            <div class="col-12 col-md-4">
+              <label class="form-label" for="assegnazione">Data assegnazione</label>
+              <input id="assegnazione" type="date" class="form-control" [(ngModel)]="formModel.dataAssegnazione" />
+              <div class="form-text">Se vuota, viene usata la data odierna.</div>
+            </div>
+          } @else {
+            <div class="col-12 col-md-4">
+              <label class="form-label" for="stato">Stato</label>
+              <select id="stato" class="form-select" [(ngModel)]="formModel.stato">
+                <option [ngValue]="Stato.Assegnato">Assegnato</option>
+                <option [ngValue]="Stato.Completato">Completato</option>
+                <option [ngValue]="Stato.Scaduto">Scaduto</option>
+                <option [ngValue]="Stato.Annullato">Annullato</option>
+              </select>
+            </div>
+          }
+        </div>
+
+        @if (formError) {
+          <div class="alert alert-danger mt-3 mb-0">{{ formError }}</div>
+        }
+
+        <div class="mt-3">
+          <button class="btn btn-primary me-2" (click)="save()">Salva</button>
+          <button class="btn btn-outline-secondary" (click)="cancelForm()">Annulla</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (message) {
+    <div class="alert alert-success" role="alert">{{ message }}</div>
+  }
+  @if (error) {
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  }
+
+  @if (loading) {
+    <p class="text-muted">Caricamento&hellip;</p>
+  } @else if (assegnazioni.length === 0) {
+    <p class="text-muted">Nessuna assegnazione corrisponde ai filtri.</p>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Dipendente</th>
+            <th>Corso</th>
+            <th>Categoria</th>
+            <th>Assegnazione</th>
+            <th>Scadenza</th>
+            <th>Stato</th>
+            <th>Completamento</th>
+            <th class="text-end">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of assegnazioni; track a.id) {
+            <tr>
+              <td>{{ a.dipendente?.cognome }} {{ a.dipendente?.nome }}</td>
+              <td>{{ a.corso?.titolo }}</td>
+              <td>{{ a.corso?.categoria }}</td>
+              <td>{{ a.dataAssegnazione | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ a.dataScadenza | date: 'dd/MM/yyyy' }}</td>
+              <td><span class="badge" [ngClass]="STATO_BADGE[a.stato]">{{ a.stato }}</span></td>
+              <td>{{ a.dataCompletamento ? (a.dataCompletamento | date: 'dd/MM/yyyy') : '—' }}</td>
+              <td class="text-end text-nowrap">
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="openEdit(a)">Modifica</button>
+                @if (annullabile(a)) {
+                  <button class="btn btn-sm btn-outline-warning me-1" (click)="annulla(a)">Annulla</button>
+                }
+                <button class="btn btn-sm btn-outline-danger" (click)="remove(a)">Elimina</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,89 @@
+<div class="container py-4">
+  <h1 class="h3 mb-3">Statistiche Academy</h1>
+
+  <!-- Filtri -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="f-mese">Mese</label>
+          <input id="f-mese" type="month" class="form-control" [(ngModel)]="filtroMese" (change)="load()" />
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="f-cat">Categoria</label>
+          <select id="f-cat" class="form-select" [(ngModel)]="filtroCategoria" (change)="load()">
+            <option value="">Tutte</option>
+            @for (c of categorie; track c) {
+              <option [ngValue]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="f-dip">Dipendente</label>
+          <select id="f-dip" class="form-select" [(ngModel)]="filtroDipendenteId" (change)="load()">
+            <option value="">Tutti</option>
+            @for (d of dipendenti; track d.id) {
+              <option [ngValue]="d.id">{{ d.cognome }} {{ d.nome }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <button class="btn btn-outline-secondary w-100" (click)="resetFiltri()">Azzera filtri</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toggle vista -->
+  <div class="btn-group mb-3" role="group">
+    <button class="btn" [ngClass]="vista === 'tabella' ? 'btn-primary' : 'btn-outline-primary'" (click)="vista = 'tabella'">
+      Tabella
+    </button>
+    <button class="btn" [ngClass]="vista === 'grafico' ? 'btn-primary' : 'btn-outline-primary'" (click)="vista = 'grafico'">
+      Grafico
+    </button>
+  </div>
+
+  @if (error) {
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  }
+
+  @if (loading) {
+    <p class="text-muted">Caricamento&hellip;</p>
+  } @else if (rows.length === 0) {
+    <p class="text-muted">Nessun dato disponibile per i filtri selezionati.</p>
+  } @else if (vista === 'tabella') {
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Mese</th>
+            <th>Categoria</th>
+            <th class="text-end">Assegnati</th>
+            <th class="text-end">Completati</th>
+            <th class="text-end">% Completamento</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rows; track r.mese + '-' + r.categoria) {
+            <tr>
+              <td>{{ r.mese }}</td>
+              <td>{{ r.categoria }}</td>
+              <td class="text-end">{{ r.numeroAssegnazioni }}</td>
+              <td class="text-end">{{ r.numeroCompletamenti }}</td>
+              <td class="text-end">{{ r.percentualeCompletamento }}%</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div style="position: relative; height: 420px;">
+      <canvas baseChart
+              [data]="barChartData"
+              [options]="barChartOptions"
+              [type]="barChartType">
+      </canvas>
+    </div>
+  }
+</div>

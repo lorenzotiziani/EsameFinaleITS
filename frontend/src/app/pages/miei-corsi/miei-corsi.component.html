@@ -1,0 +1,105 @@
+<div class="container py-4">
+  <h1 class="h3 mb-3">I miei corsi</h1>
+
+  <!-- Filtri -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-3">
+          <label class="form-label" for="f-stato">Stato</label>
+          <select id="f-stato" class="form-select" [(ngModel)]="filtroStato">
+            <option value="">Tutti</option>
+            <option [ngValue]="Stato.Assegnato">Assegnato</option>
+            <option [ngValue]="Stato.Completato">Completato</option>
+            <option [ngValue]="Stato.Scaduto">Scaduto</option>
+            <option [ngValue]="Stato.Annullato">Annullato</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-3">
+          <label class="form-label" for="f-cat">Categoria</label>
+          <select id="f-cat" class="form-select" [(ngModel)]="filtroCategoria">
+            <option value="">Tutte</option>
+            @for (c of categorie; track c) {
+              <option [ngValue]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-3">
+          <label class="form-label" for="f-scad">Scadenza</label>
+          <select id="f-scad" class="form-select" [(ngModel)]="filtroScadenza">
+            <option value="">Tutte</option>
+            <option value="scadute">Scadute (non completate)</option>
+            <option value="prossime30">In scadenza (30 giorni)</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-3">
+          <button class="btn btn-outline-secondary w-100" (click)="resetFiltri()">Azzera filtri</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (message) {
+    <div class="alert alert-success" role="alert">{{ message }}</div>
+  }
+  @if (error) {
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  }
+
+  @if (loading) {
+    <p class="text-muted">Caricamento&hellip;</p>
+  } @else if (filtrate.length === 0) {
+    <p class="text-muted">Nessun corso corrisponde ai filtri selezionati.</p>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Titolo</th>
+            <th>Categoria</th>
+            <th class="text-end">Durata (h)</th>
+            <th>Assegnazione</th>
+            <th>Scadenza</th>
+            <th>Stato</th>
+            <th>Completamento</th>
+            <th class="text-end">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of filtrate; track a.id) {
+            <tr>
+              <td>
+                {{ a.corso?.titolo }}
+                @if (a.corso?.obbligatorio) {
+                  <span class="badge bg-warning text-dark ms-1">Obbligatorio</span>
+                }
+              </td>
+              <td>{{ a.corso?.categoria }}</td>
+              <td class="text-end">{{ a.corso?.durataOre }}</td>
+              <td>{{ a.dataAssegnazione | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ a.dataScadenza | date: 'dd/MM/yyyy' }}</td>
+              <td><span class="badge" [ngClass]="STATO_BADGE[a.stato]">{{ a.stato }}</span></td>
+              <td>{{ a.dataCompletamento ? (a.dataCompletamento | date: 'dd/MM/yyyy') : '—' }}</td>
+              <td class="text-end text-nowrap">
+                <button class="btn btn-sm btn-outline-secondary me-1" (click)="toggleDettaglio(a.id)">
+                  {{ expandedId === a.id ? 'Chiudi' : 'Dettaglio' }}
+                </button>
+                @if (completabile(a)) {
+                  <button class="btn btn-sm btn-success" (click)="completa(a)">Completa</button>
+                }
+              </td>
+            </tr>
+            @if (expandedId === a.id) {
+              <tr>
+                <td colspan="8" class="bg-light">
+                  <strong>Descrizione:</strong>
+                  {{ a.corso?.descrizione || 'Nessuna descrizione disponibile.' }}
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

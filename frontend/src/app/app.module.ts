@@ -8,8 +8,13 @@ import { RegisterComponent } from './pages/register/register.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './utils/auth.interceptor';
-import { HomeComponent } from './pages/home/home.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { MieiCorsiComponent } from './pages/miei-corsi/miei-corsi.component';
+import { CorsiComponent } from './pages/corsi/corsi.component';
+import { AssegnazioniComponent } from './pages/assegnazioni/assegnazioni.component';
+import { StatisticheComponent } from './pages/statistiche/statistiche.component';
 import {IfAuthenticatedDirective} from './utils/if-authenticated.directive'
+import {IfRoleDirective} from './utils/if-role.directive'
 import {BaseChartDirective, provideCharts, withDefaultRegisterables} from 'ng2-charts';
 import { NavbarComponent } from './components/navbar/navbar.component';
 
@@ -18,8 +23,13 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    HomeComponent,
+    DashboardComponent,
+    MieiCorsiComponent,
+    CorsiComponent,
+    AssegnazioniComponent,
+    StatisticheComponent,
     IfAuthenticatedDirective,
+    IfRoleDirective,
     NavbarComponent
   ],
   imports: [
