@@ -41,3 +41,14 @@ export class InsufficientFundsError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
+
+export class ConflictError extends Error {
+    public statusCode: number;
+
+    constructor(message: string = 'Conflitto con lo stato attuale della risorsa') {
+        super(message);
+        this.name = 'ConflictError';
+        this.statusCode = 409;
+        Error.captureStackTrace(this, this.constructor);
+    }
+}

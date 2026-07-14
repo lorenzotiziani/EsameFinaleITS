@@ -3,7 +3,8 @@ import {
     UnauthorizedError,
     ForbiddenError,
     BadRequestError,
-    InsufficientFundsError
+    InsufficientFundsError,
+    ConflictError
 } from "./custom.error";
 
 export const customErrorHandler = (
@@ -16,7 +17,8 @@ export const customErrorHandler = (
         UnauthorizedError,
         ForbiddenError,
         BadRequestError,
-        InsufficientFundsError
+        InsufficientFundsError,
+        ConflictError
     ];
 
     for (const ErrorClass of customErrors) {
