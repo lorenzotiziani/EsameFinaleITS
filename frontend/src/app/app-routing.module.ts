@@ -7,6 +7,7 @@ import { MieiCorsiComponent } from './pages/miei-corsi/miei-corsi.component';
 import { CorsiComponent } from './pages/corsi/corsi.component';
 import { AssegnazioniComponent } from './pages/assegnazioni/assegnazioni.component';
 import { StatisticheComponent } from './pages/statistiche/statistiche.component';
+import { DipendentiComponent } from './pages/dipendenti/dipendenti.component';
 import { authGuard } from './utils/auth.guard';
 import { roleGuard } from './utils/role.guard';
 import { Ruolo } from './entities/Ruolo';
@@ -40,6 +41,11 @@ const routes: Routes = [
   {
     path: 'assegnazioni-corsi',
     component: AssegnazioniComponent,
+    canActivate: [roleGuard(Ruolo.REFERENTE_ACADEMY)],
+  },
+  {
+    path: 'dipendenti',
+    component: DipendentiComponent,
     canActivate: [roleGuard(Ruolo.REFERENTE_ACADEMY)],
   },
   {

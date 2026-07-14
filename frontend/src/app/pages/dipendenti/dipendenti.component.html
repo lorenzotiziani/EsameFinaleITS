@@ -1,0 +1,26 @@
+<div class="container py-4">
+  <h1 class="h3 mb-3">Dipendenti</h1>
+
+  @if (loadError) {
+    <div class="alert alert-danger" role="alert">{{ loadError }}</div>
+  }
+
+  @if (loading) {
+    <p class="text-muted">Caricamento&hellip;</p>
+  } @else if (dipendenti.length === 0) {
+    <p class="text-muted">Nessun dipendente presente.</p>
+  } @else {
+    <div class="row g-3">
+      @for (d of dipendenti; track d.id) {
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title mb-1">{{ d.cognome }} {{ d.nome }}</h5>
+              <div class="text-muted small">{{ d.email }}</div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

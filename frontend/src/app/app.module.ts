@@ -13,6 +13,7 @@ import { MieiCorsiComponent } from './pages/miei-corsi/miei-corsi.component';
 import { CorsiComponent } from './pages/corsi/corsi.component';
 import { AssegnazioniComponent } from './pages/assegnazioni/assegnazioni.component';
 import { StatisticheComponent } from './pages/statistiche/statistiche.component';
+import { DipendentiComponent } from './pages/dipendenti/dipendenti.component';
 import {IfAuthenticatedDirective} from './utils/if-authenticated.directive'
 import {IfRoleDirective} from './utils/if-role.directive'
 import {BaseChartDirective, provideCharts, withDefaultRegisterables} from 'ng2-charts';
@@ -30,6 +31,7 @@ import { ModalComponent } from './components/modal/modal.component';
     CorsiComponent,
     AssegnazioniComponent,
     StatisticheComponent,
+    DipendentiComponent,
     IfAuthenticatedDirective,
     IfRoleDirective,
     NavbarComponent,
