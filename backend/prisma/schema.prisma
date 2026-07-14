@@ -8,24 +8,81 @@ datasource db {
 }
 
 model TUtente {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
+  id       Int    @id @default(autoincrement())
   nome     String
   cognome  String
-  isActive Boolean @default(false)
-  role     String  @default("USER")
+  email    String @unique
+  password String
+  ruolo    Ruolo  @default(DIPENDENTE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   refreshTokens RefreshToken[]
+  assegnazioni  AssegnazioneCorso[]
 }
 
 model RefreshToken {
   id        Int      @id @default(autoincrement())
-  token     String
+  token     String   @unique
   userId    Int
   expiresAt DateTime
-  isRevoked Boolean? @default(false)
-  createdAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
 
-  user TUtente @relation(fields: [userId], references: [id])
+  user TUtente @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CorsoAcademy {
+  id           Int     @id @default(autoincrement())
+  titolo       String
+  descrizione  String?
+  categoria    String
+  durataOre    Int
+  obbligatorio Boolean @default(false)
+  attivo       Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assegnazioni AssegnazioneCorso[]
+
+  @@index([categoria])
+  @@index([attivo])
+}
+
+model AssegnazioneCorso {
+  id                Int       @id @default(autoincrement())
+  corsoId           Int
+  dipendenteId      Int
+  dataAssegnazione  DateTime  @default(now())
+  dataScadenza      DateTime
+  stato             Stati     @default(Assegnato)
+  dataCompletamento DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // restrict in modo che se un corso ha assegnazioni non può essere eliminato
+  corso      CorsoAcademy @relation(fields: [corsoId], references: [id], onDelete: Restrict)
+  // se un dipendente viene eliminato, le sue assegnazioni vengono rimosse
+  dipendente TUtente      @relation(fields: [dipendenteId], references: [id], onDelete: Cascade)
+
+  @@index([corsoId])
+  @@index([stato])
+  @@index([dipendenteId, stato])
+}
+
+enum Ruolo {
+  DIPENDENTE
+  REFERENTE_ACADEMY
+}
+
+enum Stati {
+  Assegnato
+  Completato
+  Scaduto
+  Annullato
 }
