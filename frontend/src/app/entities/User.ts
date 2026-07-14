@@ -1,9 +1,9 @@
+import { Ruolo } from './Ruolo';
+
 export type User = {
-    id: string;
+    id: number;
     email: string;
     nome: string;
     cognome: string;
-    role?: string;
-    isActive: boolean;
+    ruolo: Ruolo;
 };
-

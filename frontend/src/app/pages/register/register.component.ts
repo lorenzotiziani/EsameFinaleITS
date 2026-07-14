@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { Ruolo } from '../../entities/Ruolo';
 
 // Validator di gruppo: password e conferma devono coincidere
 function passwordsMatch(group: AbstractControl): ValidationErrors | null {
@@ -20,6 +21,7 @@ export class RegisterComponent {
 
 	registerForm: FormGroup;
 	registerError: string = '';
+	protected readonly Ruolo = Ruolo;
 
 	constructor(
 		private fb: FormBuilder,
@@ -31,7 +33,8 @@ export class RegisterComponent {
 			password: ['', Validators.required],
 			confirm: ['', Validators.required],
 			nome: ['', Validators.required],
-			cognome: ['', Validators.required]
+			cognome: ['', Validators.required],
+			ruolo: [Ruolo.DIPENDENTE, Validators.required]
 		}, { validators: passwordsMatch });
 
 	}

@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 interface DecodedToken {
   userId: number;
   email: string;
+  ruolo: string;
   exp: number;
   iat: number;
 }
@@ -114,6 +115,11 @@ export class JwtService {
 
   getUserData(): DecodedToken | null {
     return this.getPayload<DecodedToken>();
+  }
+
+  // Ruolo dell'utente letto dall'access token (per le guardie di rotta).
+  getRuolo(): string | null {
+    return this.getPayload<DecodedToken>()?.ruolo ?? null;
   }
 
   private isJwt(token: string): boolean {

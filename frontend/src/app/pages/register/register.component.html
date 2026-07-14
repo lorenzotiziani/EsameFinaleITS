@@ -58,6 +58,19 @@
           }
         </div>
 
+        <div class="form-outline mb-3">
+          <label for="ruolo" class="form-label">Ruolo</label>
+          <select id="ruolo" class="form-select" formControlName="ruolo">
+            <option [ngValue]="Ruolo.DIPENDENTE">Dipendente</option>
+            <option [ngValue]="Ruolo.REFERENTE_ACADEMY">Referente Academy</option>
+          </select>
+          @if (registerForm.get('ruolo')?.touched && registerForm.get('ruolo')?.invalid) {
+            <div class="text-danger">
+              Il ruolo è obbligatorio.
+            </div>
+          }
+        </div>
+
         @if (registerError) {
           <div class="text-danger text-center mb-3" style="white-space: pre-line;">{{ registerError }}</div>
         }

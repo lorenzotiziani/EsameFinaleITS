@@ -102,6 +102,7 @@ export class AuthService {
         confirm: string;
         nome: string;
         cognome: string;
+        ruolo: string;
     }): Observable<RegisterResponse> {
         return this.http.post<RegisterResponse>(`${this.API_URL}/auth/register`, userData).pipe(
             catchError(error => {
