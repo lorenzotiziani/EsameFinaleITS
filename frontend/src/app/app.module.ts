@@ -17,6 +17,8 @@ import {IfAuthenticatedDirective} from './utils/if-authenticated.directive'
 import {IfRoleDirective} from './utils/if-role.directive'
 import {BaseChartDirective, provideCharts, withDefaultRegisterables} from 'ng2-charts';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { ToastsComponent } from './components/toasts/toasts.component';
+import { ModalComponent } from './components/modal/modal.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     StatisticheComponent,
     IfAuthenticatedDirective,
     IfRoleDirective,
-    NavbarComponent
+    NavbarComponent,
+    ToastsComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,

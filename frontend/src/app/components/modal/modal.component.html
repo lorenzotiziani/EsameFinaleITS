@@ -1,0 +1,16 @@
+@if (open) {
+  <div class="app-modal-backdrop" (click)="onBackdrop()">
+    <div class="app-modal-dialog" (click)="$event.stopPropagation()">
+      <div class="app-modal-header">
+        <h5 class="mb-0">{{ title }}</h5>
+        <button type="button" class="btn-close" aria-label="Chiudi" (click)="close.emit()"></button>
+      </div>
+      <div class="app-modal-body">
+        <ng-content></ng-content>
+      </div>
+      <div class="app-modal-footer">
+        <ng-content select="[modalFooter]"></ng-content>
+      </div>
+    </div>
+  </div>
+}
