@@ -136,13 +136,13 @@
 
     <div class="col-12 col-md-6">
       <label class="form-label" for="scadenza">Data scadenza *</label>
-      <input id="scadenza" type="date" class="form-control" [(ngModel)]="formModel.dataScadenza" />
+      <input id="scadenza" type="date" class="form-control" [(ngModel)]="formModel.dataScadenza" [min]="editing === null ? oggi : null" />
     </div>
 
     @if (editing === null) {
       <div class="col-12 col-md-6">
         <label class="form-label" for="assegnazione">Data assegnazione</label>
-        <input id="assegnazione" type="date" class="form-control" [(ngModel)]="formModel.dataAssegnazione" />
+        <input id="assegnazione" type="date" class="form-control" [(ngModel)]="formModel.dataAssegnazione" [min]="oggi" />
         <div class="form-text">Se vuota, viene usata la data odierna.</div>
       </div>
     } @else {

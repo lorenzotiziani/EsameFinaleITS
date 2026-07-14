@@ -82,6 +82,16 @@ export class AssegnazioniService {
     const dataAssegnazione = data.dataAssegnazione ?? new Date();
     this.assertDate(dataAssegnazione, data.dataScadenza, null);
 
+    // Una nuova assegnazione non può iniziare né scadere prima di oggi.
+    const oggi = new Date();
+    oggi.setUTCHours(0, 0, 0, 0);
+    if (dataAssegnazione < oggi) {
+      throw new BadRequestError('La data di assegnazione non può essere precedente a oggi');
+    }
+    if (data.dataScadenza < oggi) {
+      throw new BadRequestError('La data di scadenza non può essere precedente a oggi');
+    }
+
     return await prisma.assegnazioneCorso.create({
       data: {
         corsoId: data.corsoId,

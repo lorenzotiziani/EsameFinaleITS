@@ -41,6 +41,8 @@ export class AssegnazioniComponent implements OnInit {
 
   readonly Stato = Stato;
   readonly STATO_BADGE = STATO_BADGE;
+  // Data odierna (YYYY-MM-DD) per impedire assegnazioni con date passate.
+  readonly oggi = new Date().toISOString().slice(0, 10);
 
   ngOnInit(): void {
     // Carica in parallelo corsi e dipendenti (per i select e i filtri), poi le assegnazioni.
@@ -132,6 +134,14 @@ export class AssegnazioniComponent implements OnInit {
       }
       if (!this.formModel.dataScadenza) {
         this.formError = 'Indica la data di scadenza.';
+        return;
+      }
+      if (this.formModel.dataAssegnazione && this.formModel.dataAssegnazione < this.oggi) {
+        this.formError = 'La data di assegnazione non può essere precedente a oggi.';
+        return;
+      }
+      if (this.formModel.dataScadenza < this.oggi) {
+        this.formError = 'La data di scadenza non può essere precedente a oggi.';
         return;
       }
       this.assegnazioniSrv
