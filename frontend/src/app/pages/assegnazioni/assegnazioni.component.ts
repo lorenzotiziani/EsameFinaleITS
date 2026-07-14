@@ -3,6 +3,7 @@ import { forkJoin } from 'rxjs';
 import { AssegnazioniService } from '../../services/assegnazioni.service';
 import { CorsiService } from '../../services/corsi.service';
 import { UserService } from '../../services/user.service';
+import { ToastService } from '../../services/toast.service';
 import { Assegnazione, DipendenteRef } from '../../entities/Assegnazione';
 import { Corso } from '../../entities/Corso';
 import { Stato, STATO_BADGE } from '../../entities/Stato';
@@ -16,6 +17,7 @@ export class AssegnazioniComponent implements OnInit {
   private assegnazioniSrv = inject(AssegnazioniService);
   private corsiSrv = inject(CorsiService);
   private userSrv = inject(UserService);
+  private toast = inject(ToastService);
 
   assegnazioni: Assegnazione[] = [];
   corsi: Corso[] = [];
@@ -23,8 +25,7 @@ export class AssegnazioniComponent implements OnInit {
   categorie: string[] = [];
 
   loading = false;
-  error = '';
-  message = '';
+  loadError = '';
 
   // Filtri (server-side).
   filtroStato: Stato | '' = '';
@@ -32,7 +33,7 @@ export class AssegnazioniComponent implements OnInit {
   filtroCorsoId: number | '' = '';
   filtroDipendenteId: number | '' = '';
 
-  // Form.
+  // Form (modal).
   showForm = false;
   editing: Assegnazione | null = null;
   formError = '';
@@ -52,14 +53,14 @@ export class AssegnazioniComponent implements OnInit {
         this.dipendenti = dipendenti;
         this.categorie = Array.from(new Set(corsi.map((c) => c.categoria))).sort();
       },
-      error: (err) => (this.error = this.extractError(err)),
+      error: (err) => this.toast.error(this.extractError(err)),
     });
     this.load();
   }
 
   load(): void {
     this.loading = true;
-    this.error = '';
+    this.loadError = '';
     this.assegnazioniSrv
       .list({
         stato: this.filtroStato || undefined,
@@ -73,7 +74,7 @@ export class AssegnazioniComponent implements OnInit {
           this.loading = false;
         },
         error: (err) => {
-          this.error = this.extractError(err);
+          this.loadError = this.extractError(err);
           this.loading = false;
         },
       });
@@ -142,7 +143,7 @@ export class AssegnazioniComponent implements OnInit {
         })
         .subscribe({
           next: () => {
-            this.message = 'Assegnazione creata.';
+            this.toast.success('Assegnazione creata.');
             this.showForm = false;
             this.load();
           },
@@ -161,7 +162,7 @@ export class AssegnazioniComponent implements OnInit {
         })
         .subscribe({
           next: (aggiornata) => {
-            this.message = 'Assegnazione aggiornata.';
+            this.toast.success('Assegnazione aggiornata.');
             this.showForm = false;
             this.assegnazioni = this.assegnazioni.map((x) =>
               x.id === aggiornata.id ? aggiornata : x
@@ -176,14 +177,12 @@ export class AssegnazioniComponent implements OnInit {
     if (!confirm('Annullare questa assegnazione?')) {
       return;
     }
-    this.error = '';
-    this.message = '';
     this.assegnazioniSrv.annulla(a.id).subscribe({
       next: (aggiornata) => {
         this.assegnazioni = this.assegnazioni.map((x) => (x.id === aggiornata.id ? aggiornata : x));
-        this.message = 'Assegnazione annullata.';
+        this.toast.success('Assegnazione annullata.');
       },
-      error: (err) => (this.error = this.extractError(err)),
+      error: (err) => this.toast.error(this.extractError(err)),
     });
   }
 
@@ -191,14 +190,12 @@ export class AssegnazioniComponent implements OnInit {
     if (!confirm('Eliminare definitivamente questa assegnazione?')) {
       return;
     }
-    this.error = '';
-    this.message = '';
     this.assegnazioniSrv.remove(a.id).subscribe({
       next: () => {
         this.assegnazioni = this.assegnazioni.filter((x) => x.id !== a.id);
-        this.message = 'Assegnazione eliminata.';
+        this.toast.success('Assegnazione eliminata.');
       },
-      error: (err) => (this.error = this.extractError(err)),
+      error: (err) => this.toast.error(this.extractError(err)),
     });
   }
 

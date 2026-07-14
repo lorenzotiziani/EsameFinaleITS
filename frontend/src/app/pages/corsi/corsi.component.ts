@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CorsiService } from '../../services/corsi.service';
+import { ToastService } from '../../services/toast.service';
 import { Corso, CorsoInput } from '../../entities/Corso';
 
 @Component({
@@ -9,18 +10,18 @@ import { Corso, CorsoInput } from '../../entities/Corso';
 })
 export class CorsiComponent implements OnInit {
   private corsiSrv = inject(CorsiService);
+  private toast = inject(ToastService);
 
   corsi: Corso[] = [];
   categorie: string[] = [];
   loading = false;
-  error = '';
-  message = '';
+  loadError = '';
 
   // Filtri (server-side).
   filtroCategoria = '';
   filtroAttivo: '' | 'true' | 'false' = '';
 
-  // Form crea/modifica.
+  // Form crea/modifica (modal).
   showForm = false;
   editingId: number | null = null;
   formError = '';
@@ -33,7 +34,7 @@ export class CorsiComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.error = '';
+    this.loadError = '';
     const filters = {
       categoria: this.filtroCategoria || undefined,
       attivo: this.filtroAttivo === '' ? undefined : this.filtroAttivo === 'true',
@@ -44,7 +45,7 @@ export class CorsiComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = this.extractError(err);
+        this.loadError = this.extractError(err);
         this.loading = false;
       },
     });
@@ -115,14 +116,14 @@ export class CorsiComponent implements OnInit {
       descrizione: this.formModel.descrizione?.trim() || null,
     };
 
-    const request$ =
-      this.editingId === null
-        ? this.corsiSrv.create(payload)
-        : this.corsiSrv.update(this.editingId, payload);
+    const creating = this.editingId === null;
+    const request$ = creating
+      ? this.corsiSrv.create(payload)
+      : this.corsiSrv.update(this.editingId!, payload);
 
     request$.subscribe({
       next: () => {
-        this.message = this.editingId === null ? 'Corso creato.' : 'Corso aggiornato.';
+        this.toast.success(creating ? 'Corso creato.' : 'Corso aggiornato.');
         this.showForm = false;
         this.loadCategorie();
         this.load();
@@ -134,16 +135,14 @@ export class CorsiComponent implements OnInit {
   }
 
   toggleAttivo(c: Corso): void {
-    this.error = '';
-    this.message = '';
     this.corsiSrv.changeStatus(c.id, !c.attivo).subscribe({
       next: (aggiornato) => {
         this.corsi = this.corsi.map((x) => (x.id === aggiornato.id ? aggiornato : x));
-        this.message = `Corso "${aggiornato.titolo}" ${aggiornato.attivo ? 'attivato' : 'disattivato'}.`;
+        this.toast.success(
+          `Corso "${aggiornato.titolo}" ${aggiornato.attivo ? 'attivato' : 'disattivato'}.`
+        );
       },
-      error: (err) => {
-        this.error = this.extractError(err);
-      },
+      error: (err) => this.toast.error(this.extractError(err)),
     });
   }
 
@@ -151,17 +150,13 @@ export class CorsiComponent implements OnInit {
     if (!confirm(`Eliminare il corso "${c.titolo}"? L'operazione non è reversibile.`)) {
       return;
     }
-    this.error = '';
-    this.message = '';
     this.corsiSrv.remove(c.id).subscribe({
       next: () => {
         this.corsi = this.corsi.filter((x) => x.id !== c.id);
-        this.message = 'Corso eliminato.';
+        this.toast.success('Corso eliminato.');
       },
-      error: (err) => {
-        // Tipicamente 409: il corso ha assegnazioni collegate.
-        this.error = this.extractError(err);
-      },
+      // Tipicamente 409: il corso ha assegnazioni collegate.
+      error: (err) => this.toast.error(this.extractError(err)),
     });
   }
 

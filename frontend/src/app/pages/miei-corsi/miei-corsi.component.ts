@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AssegnazioniService } from '../../services/assegnazioni.service';
+import { ToastService } from '../../services/toast.service';
 import { Assegnazione } from '../../entities/Assegnazione';
 import { Stato, STATO_BADGE } from '../../entities/Stato';
 
@@ -12,18 +13,19 @@ type FiltroScadenza = '' | 'scadute' | 'prossime30';
 })
 export class MieiCorsiComponent implements OnInit {
   private assegnazioniSrv = inject(AssegnazioniService);
+  private toast = inject(ToastService);
 
   assegnazioni: Assegnazione[] = [];
   loading = false;
-  error = '';
-  message = '';
+  loadError = '';
 
   // Filtri (applicati lato client sul dataset del dipendente).
   filtroStato: Stato | '' = '';
   filtroCategoria = '';
   filtroScadenza: FiltroScadenza = '';
 
-  expandedId: number | null = null;
+  // Dettaglio (modal).
+  dettaglio: Assegnazione | null = null;
 
   readonly Stato = Stato;
   readonly STATO_BADGE = STATO_BADGE;
@@ -34,14 +36,14 @@ export class MieiCorsiComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.error = '';
+    this.loadError = '';
     this.assegnazioniSrv.list().subscribe({
       next: (data) => {
         this.assegnazioni = data;
         this.loading = false;
       },
       error: (err) => {
-        this.error = this.extractError(err);
+        this.loadError = this.extractError(err);
         this.loading = false;
       },
     });
@@ -85,8 +87,12 @@ export class MieiCorsiComponent implements OnInit {
     });
   }
 
-  toggleDettaglio(id: number): void {
-    this.expandedId = this.expandedId === id ? null : id;
+  openDettaglio(a: Assegnazione): void {
+    this.dettaglio = a;
+  }
+
+  closeDettaglio(): void {
+    this.dettaglio = null;
   }
 
   completabile(a: Assegnazione): boolean {
@@ -94,17 +100,15 @@ export class MieiCorsiComponent implements OnInit {
   }
 
   completa(a: Assegnazione): void {
-    this.error = '';
-    this.message = '';
     this.assegnazioniSrv.completa(a.id).subscribe({
       next: (aggiornata) => {
-        // Sostituisce l'elemento aggiornato nella lista.
         this.assegnazioni = this.assegnazioni.map((x) => (x.id === aggiornata.id ? aggiornata : x));
-        this.message = `Corso "${aggiornata.corso?.titolo ?? ''}" segnato come completato.`;
+        if (this.dettaglio?.id === aggiornata.id) {
+          this.dettaglio = aggiornata;
+        }
+        this.toast.success(`Corso "${aggiornata.corso?.titolo ?? ''}" segnato come completato.`);
       },
-      error: (err) => {
-        this.error = this.extractError(err);
-      },
+      error: (err) => this.toast.error(this.extractError(err)),
     });
   }
 

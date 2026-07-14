@@ -32,64 +32,8 @@
     </div>
   </div>
 
-  <!-- Form crea/modifica -->
-  @if (showForm) {
-    <div class="card mb-3 border-primary">
-      <div class="card-body">
-        <h5 class="card-title">{{ editingId === null ? 'Nuovo corso' : 'Modifica corso' }}</h5>
-        <div class="row g-3">
-          <div class="col-12 col-md-6">
-            <label class="form-label" for="titolo">Titolo *</label>
-            <input id="titolo" class="form-control" [(ngModel)]="formModel.titolo" />
-          </div>
-          <div class="col-12 col-md-6">
-            <label class="form-label" for="categoria">Categoria *</label>
-            <input id="categoria" class="form-control" [(ngModel)]="formModel.categoria" list="cat-list" />
-            <datalist id="cat-list">
-              @for (c of categorie; track c) {
-                <option [value]="c"></option>
-              }
-            </datalist>
-          </div>
-          <div class="col-12">
-            <label class="form-label" for="descrizione">Descrizione</label>
-            <textarea id="descrizione" class="form-control" rows="2" [(ngModel)]="formModel.descrizione"></textarea>
-          </div>
-          <div class="col-6 col-md-3">
-            <label class="form-label" for="durata">Durata (ore) *</label>
-            <input id="durata" type="number" min="1" class="form-control" [(ngModel)]="formModel.durataOre" />
-          </div>
-          <div class="col-6 col-md-3 d-flex align-items-end">
-            <div class="form-check">
-              <input id="obbligatorio" type="checkbox" class="form-check-input" [(ngModel)]="formModel.obbligatorio" />
-              <label class="form-check-label" for="obbligatorio">Obbligatorio</label>
-            </div>
-          </div>
-          <div class="col-6 col-md-3 d-flex align-items-end">
-            <div class="form-check">
-              <input id="attivo" type="checkbox" class="form-check-input" [(ngModel)]="formModel.attivo" />
-              <label class="form-check-label" for="attivo">Attivo</label>
-            </div>
-          </div>
-        </div>
-
-        @if (formError) {
-          <div class="alert alert-danger mt-3 mb-0">{{ formError }}</div>
-        }
-
-        <div class="mt-3">
-          <button class="btn btn-primary me-2" (click)="save()">Salva</button>
-          <button class="btn btn-outline-secondary" (click)="cancelForm()">Annulla</button>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (message) {
-    <div class="alert alert-success" role="alert">{{ message }}</div>
-  }
-  @if (error) {
-    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  @if (loadError) {
+    <div class="alert alert-danger" role="alert">{{ loadError }}</div>
   }
 
   @if (loading) {
@@ -97,41 +41,91 @@
   } @else if (corsi.length === 0) {
     <p class="text-muted">Nessun corso presente.</p>
   } @else {
-    <div class="table-responsive">
-      <table class="table table-striped align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>Titolo</th>
-            <th>Categoria</th>
-            <th class="text-end">Durata (h)</th>
-            <th>Obbligatorio</th>
-            <th>Stato</th>
-            <th class="text-end">Azioni</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (c of corsi; track c.id) {
-            <tr>
-              <td>{{ c.titolo }}</td>
-              <td>{{ c.categoria }}</td>
-              <td class="text-end">{{ c.durataOre }}</td>
-              <td>{{ c.obbligatorio ? 'Sì' : 'No' }}</td>
-              <td>
-                <span class="badge" [ngClass]="c.attivo ? 'bg-success' : 'bg-secondary'">
+    <div class="row g-3">
+      @for (c of corsi; track c.id) {
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title mb-0">{{ c.titolo }}</h5>
+                <span class="badge ms-2" [ngClass]="c.attivo ? 'bg-success' : 'bg-secondary'">
                   {{ c.attivo ? 'Attivo' : 'Non attivo' }}
                 </span>
-              </td>
-              <td class="text-end text-nowrap">
-                <button class="btn btn-sm btn-outline-primary me-1" (click)="openEdit(c)">Modifica</button>
-                <button class="btn btn-sm btn-outline-secondary me-1" (click)="toggleAttivo(c)">
+              </div>
+
+              <div class="text-muted small mb-2">
+                {{ c.categoria }} &middot; {{ c.durataOre }} h
+                @if (c.obbligatorio) {
+                  <span class="badge bg-warning text-dark ms-1">Obbligatorio</span>
+                }
+              </div>
+
+              @if (c.descrizione) {
+                <p class="card-text small mb-3">{{ c.descrizione }}</p>
+              }
+
+              <div class="mt-auto d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-primary" (click)="openEdit(c)">Modifica</button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="toggleAttivo(c)">
                   {{ c.attivo ? 'Disattiva' : 'Attiva' }}
                 </button>
                 <button class="btn btn-sm btn-outline-danger" (click)="remove(c)">Elimina</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   }
 </div>
+
+<!-- Modal crea/modifica -->
+<app-modal
+  [open]="showForm"
+  [title]="editingId === null ? 'Nuovo corso' : 'Modifica corso'"
+  (close)="cancelForm()">
+  <div class="row g-3">
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="titolo">Titolo *</label>
+      <input id="titolo" class="form-control" [(ngModel)]="formModel.titolo" />
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="categoria">Categoria *</label>
+      <input id="categoria" class="form-control" [(ngModel)]="formModel.categoria" list="cat-list" />
+      <datalist id="cat-list">
+        @for (c of categorie; track c) {
+          <option [value]="c"></option>
+        }
+      </datalist>
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="descrizione">Descrizione</label>
+      <textarea id="descrizione" class="form-control" rows="2" [(ngModel)]="formModel.descrizione"></textarea>
+    </div>
+    <div class="col-6 col-md-4">
+      <label class="form-label" for="durata">Durata (ore) *</label>
+      <input id="durata" type="number" min="1" class="form-control" [(ngModel)]="formModel.durataOre" />
+    </div>
+    <div class="col-6 col-md-4 d-flex align-items-end">
+      <div class="form-check">
+        <input id="obbligatorio" type="checkbox" class="form-check-input" [(ngModel)]="formModel.obbligatorio" />
+        <label class="form-check-label" for="obbligatorio">Obbligatorio</label>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 d-flex align-items-end">
+      <div class="form-check">
+        <input id="attivo" type="checkbox" class="form-check-input" [(ngModel)]="formModel.attivo" />
+        <label class="form-check-label" for="attivo">Attivo</label>
+      </div>
+    </div>
+  </div>
+
+  @if (formError) {
+    <div class="alert alert-danger mt-3 mb-0">{{ formError }}</div>
+  }
+
+  <div modalFooter>
+    <button class="btn btn-outline-secondary" (click)="cancelForm()">Annulla</button>
+    <button class="btn btn-primary" (click)="save()">Salva</button>
+  </div>
+</app-modal>

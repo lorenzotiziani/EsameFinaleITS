@@ -2,7 +2,7 @@
   <h1 class="h3 mb-3">I miei corsi</h1>
 
   <!-- Filtri -->
-  <div class="card mb-3">
+  <div class="card mb-4">
     <div class="card-body">
       <div class="row g-3 align-items-end">
         <div class="col-12 col-md-3">
@@ -39,11 +39,8 @@
     </div>
   </div>
 
-  @if (message) {
-    <div class="alert alert-success" role="alert">{{ message }}</div>
-  }
-  @if (error) {
-    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  @if (loadError) {
+    <div class="alert alert-danger" role="alert">{{ loadError }}</div>
   }
 
   @if (loading) {
@@ -51,55 +48,83 @@
   } @else if (filtrate.length === 0) {
     <p class="text-muted">Nessun corso corrisponde ai filtri selezionati.</p>
   } @else {
-    <div class="table-responsive">
-      <table class="table table-striped table-hover align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>Titolo</th>
-            <th>Categoria</th>
-            <th class="text-end">Durata (h)</th>
-            <th>Assegnazione</th>
-            <th>Scadenza</th>
-            <th>Stato</th>
-            <th>Completamento</th>
-            <th class="text-end">Azioni</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (a of filtrate; track a.id) {
-            <tr>
-              <td>
-                {{ a.corso?.titolo }}
+    <div class="row g-3">
+      @for (a of filtrate; track a.id) {
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title mb-0">{{ a.corso?.titolo }}</h5>
+                <span class="badge ms-2" [ngClass]="STATO_BADGE[a.stato]">{{ a.stato }}</span>
+              </div>
+
+              <div class="text-muted small mb-2">
+                {{ a.corso?.categoria }} &middot; {{ a.corso?.durataOre }} h
                 @if (a.corso?.obbligatorio) {
                   <span class="badge bg-warning text-dark ms-1">Obbligatorio</span>
                 }
-              </td>
-              <td>{{ a.corso?.categoria }}</td>
-              <td class="text-end">{{ a.corso?.durataOre }}</td>
-              <td>{{ a.dataAssegnazione | date: 'dd/MM/yyyy' }}</td>
-              <td>{{ a.dataScadenza | date: 'dd/MM/yyyy' }}</td>
-              <td><span class="badge" [ngClass]="STATO_BADGE[a.stato]">{{ a.stato }}</span></td>
-              <td>{{ a.dataCompletamento ? (a.dataCompletamento | date: 'dd/MM/yyyy') : '—' }}</td>
-              <td class="text-end text-nowrap">
-                <button class="btn btn-sm btn-outline-secondary me-1" (click)="toggleDettaglio(a.id)">
-                  {{ expandedId === a.id ? 'Chiudi' : 'Dettaglio' }}
-                </button>
+              </div>
+
+              <ul class="list-unstyled small mb-3">
+                <li><strong>Assegnazione:</strong> {{ a.dataAssegnazione | date: 'dd/MM/yyyy' }}</li>
+                <li><strong>Scadenza:</strong> {{ a.dataScadenza | date: 'dd/MM/yyyy' }}</li>
+                <li>
+                  <strong>Completamento:</strong>
+                  {{ a.dataCompletamento ? (a.dataCompletamento | date: 'dd/MM/yyyy') : '—' }}
+                </li>
+              </ul>
+
+              <div class="mt-auto d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" (click)="openDettaglio(a)">Dettaglio</button>
                 @if (completabile(a)) {
                   <button class="btn btn-sm btn-success" (click)="completa(a)">Completa</button>
                 }
-              </td>
-            </tr>
-            @if (expandedId === a.id) {
-              <tr>
-                <td colspan="8" class="bg-light">
-                  <strong>Descrizione:</strong>
-                  {{ a.corso?.descrizione || 'Nessuna descrizione disponibile.' }}
-                </td>
-              </tr>
-            }
-          }
-        </tbody>
-      </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   }
 </div>
+
+<!-- Modal dettaglio -->
+<app-modal [open]="!!dettaglio" [title]="dettaglio?.corso?.titolo || 'Dettaglio corso'" (close)="closeDettaglio()">
+  @if (dettaglio) {
+    <div class="mb-3">
+      <span class="badge me-1" [ngClass]="STATO_BADGE[dettaglio.stato]">{{ dettaglio.stato }}</span>
+      @if (dettaglio.corso?.obbligatorio) {
+        <span class="badge bg-warning text-dark">Obbligatorio</span>
+      }
+    </div>
+
+    <dl class="row mb-0">
+      <dt class="col-sm-4">Categoria</dt>
+      <dd class="col-sm-8">{{ dettaglio.corso?.categoria }}</dd>
+
+      <dt class="col-sm-4">Durata</dt>
+      <dd class="col-sm-8">{{ dettaglio.corso?.durataOre }} ore</dd>
+
+      <dt class="col-sm-4">Assegnazione</dt>
+      <dd class="col-sm-8">{{ dettaglio.dataAssegnazione | date: 'dd/MM/yyyy' }}</dd>
+
+      <dt class="col-sm-4">Scadenza</dt>
+      <dd class="col-sm-8">{{ dettaglio.dataScadenza | date: 'dd/MM/yyyy' }}</dd>
+
+      <dt class="col-sm-4">Completamento</dt>
+      <dd class="col-sm-8">
+        {{ dettaglio.dataCompletamento ? (dettaglio.dataCompletamento | date: 'dd/MM/yyyy') : '—' }}
+      </dd>
+
+      <dt class="col-sm-4">Descrizione</dt>
+      <dd class="col-sm-8">{{ dettaglio.corso?.descrizione || 'Nessuna descrizione disponibile.' }}</dd>
+    </dl>
+  }
+
+  <div modalFooter>
+    @if (dettaglio && completabile(dettaglio)) {
+      <button class="btn btn-success" (click)="completa(dettaglio)">Segna come completato</button>
+    }
+    <button class="btn btn-outline-secondary" (click)="closeDettaglio()">Chiudi</button>
+  </div>
+</app-modal>
