@@ -1,0 +1,11 @@
+# Deploy del frontend Angular su Netlify.
+[build]
+  base = "frontend"
+  command = "npm install && npm run build"
+  publish = "dist/template/browser"
+
+# Routing SPA: ogni percorso sconosciuto serve index.html (altrimenti refresh su /corsi ecc. dà 404).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
