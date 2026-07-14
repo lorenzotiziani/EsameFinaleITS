@@ -77,6 +77,7 @@ export class AssegnazioniService {
   ): Promise<AssegnazioneConRelazioni> {
     await this.isCorsoAttivo(data.corsoId);
     await this.isDipendente(data.dipendenteId);
+    await this.alreadyAssigned(data);
 
     const dataAssegnazione = data.dataAssegnazione ?? new Date();
     this.assertDate(dataAssegnazione, data.dataScadenza, null);
@@ -213,5 +214,20 @@ export class AssegnazioniService {
       throw new NotFoundError('Assegnazione non trovata');
     }
     return assegnazione;
+  }
+
+  private static async alreadyAssigned(data: AssegnazioneCreateDTO) {
+    const { corsoId, dipendenteId } = data;
+
+    const assigned = await prisma.assegnazioneCorso.findFirst({
+      where: {
+        corsoId,
+        dipendenteId,
+      },
+    });
+
+    if (assigned && assigned.stato !== Stati.Annullato && assigned.stato !== Stati.Completato) {
+      throw new ConflictError('Il dipendente è già assegnato a questo corso');
+    }
   }
 }
