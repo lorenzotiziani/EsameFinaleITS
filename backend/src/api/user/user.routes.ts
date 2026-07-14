@@ -12,7 +12,7 @@ router.use(authMiddleware);
 router.get('/profile', UserController.getProfile);
 router.put('/change-password', validate(changePasswordRequirements), UserController.changePassword);
 router.delete('/deleteAccount', UserController.deleteAccount);
-router.get('/', requireAdmin, UserController.getAllUsers);
+router.get('/', requireAdmin, UserController.getDipendenti);
 
 
 

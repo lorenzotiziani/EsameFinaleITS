@@ -6,14 +6,7 @@ import { AuthRequest } from '../../middleware/auth.middleware';
 export class UserController {
   static async getProfile(req: AuthRequest, res: Response, next:NextFunction) {
     try {
-      if (!req.user) {
-        return res.status(401).json({
-          success: false,
-          error: 'Utente non autenticato'
-        });
-      }
-
-      const user = await UserService.getUserById(req.user.userId);
+      const user = await UserService.getUserById(req.user!.userId);
 
       if (!user) {
         return res.status(404).json({
@@ -48,14 +41,7 @@ export class UserController {
 
   static async deleteAccount(req: AuthRequest, res: Response, next:NextFunction) {
     try {
-      if (!req.user) {
-        return res.status(401).json({
-          success: false,
-          error: 'Utente non autenticato'
-        });
-      }
-
-      await UserService.deleteUser(req.user.userId);
+      await UserService.deleteUser(req.user!.userId);
 
       res.json({
         success: true,
@@ -66,9 +52,9 @@ export class UserController {
     }
   }
 
-  static async getAllUsers(req: AuthRequest, res: Response, next:NextFunction) {
+  static async getDipendenti(req: AuthRequest, res: Response, next:NextFunction) {
     try {
-      const users = await UserService.getAllUsers();
+      const users = await UserService.getDipendenti();
       res.json({
         success: true,
         data: users

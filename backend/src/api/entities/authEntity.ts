@@ -1,20 +1,19 @@
+import { Ruolo } from "@prisma/client";
+
 export interface User {
     id: number;
     email: string;
     password: string;
     nome: string;
     cognome: string;
-    role?: string;
-    isActive: boolean;
-
+    ruolo: Ruolo;
 }
 export interface UserSafe {
     id: number;
     email: string;
     nome: string;
     cognome: string;
-    role?: string;
-    isActive: boolean;
+    ruolo: Ruolo;
 }
 
 export interface AuthResponse {
@@ -25,7 +24,7 @@ export interface AuthResponse {
 export interface JwtPayload {
     userId: number;
     email: string;
-    role: string;
+    ruolo: string;
     iat?: number;
     exp?: number;
 }

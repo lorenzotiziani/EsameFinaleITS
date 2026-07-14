@@ -1,5 +1,6 @@
 import { User, UserSafe } from '../entities/authEntity';
 import { prisma } from '../../config/prisma';
+import { Ruolo } from '@prisma/client';
 
 
 export class UserModel {
@@ -28,15 +29,14 @@ export class UserModel {
         data: userData,
       });
     } catch (error) {
-      // Se l'utente non esiste Prisma lancia errore
       return null;
     }
   }
 
-  static async findAll(): Promise<UserSafe[]> {
+  static async findDipendenti(): Promise<UserSafe[]> {
     return await prisma.tUtente.findMany({
       where: {
-        isActive: true,
+        ruolo:Ruolo.DIPENDENTE
       },
       orderBy: {
         id: 'asc',
@@ -46,7 +46,7 @@ export class UserModel {
         email: true,
         nome: true,
         cognome: true,
-        isActive: true,
+        ruolo:true
       },
     });
   }
@@ -55,7 +55,6 @@ export class UserModel {
     const count = await prisma.tUtente.count({
       where: {
         email,
-        isActive: true,
         ...(excludeUserId && {
           id: { not: excludeUserId },
         }),

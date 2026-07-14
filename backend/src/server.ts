@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
-// Origin del frontend configurabile via env (fallback: dev su :4200)
+
 app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:4200', credentials: true }));
 app.use(morgan('tiny'));
 app.use(express.json());
@@ -22,7 +22,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/', apiRouter);
 
-// Catch-all 404: risponde in JSON per i path non gestiti (invece dell'HTML default di Express)
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Risorsa non trovata' });
 });

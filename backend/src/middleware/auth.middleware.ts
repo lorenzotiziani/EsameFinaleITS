@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../api/auth/auth.service';
 import { UnauthorizedError } from '../errors';
+import { Ruolo } from '@prisma/client';
 
 export interface AuthRequest extends Request {
   user?: {
     userId: number;
     email: string;
-    role: string;
+    ruolo: string;
   };
 }
 
@@ -33,7 +34,7 @@ export const authMiddleware = async (
     (req as AuthRequest).user = {
       userId: decoded.userId,
       email: decoded.email,
-      role: decoded.role
+      ruolo: decoded.ruolo
     };
 
     next();
@@ -42,16 +43,14 @@ export const authMiddleware = async (
   }
 };
 
-// Consente l'accesso solo agli utenti con ruolo ADMIN.
-// Va usato DOPO authMiddleware (che popola req.user con il ruolo dal JWT).
 export const requireAdmin = (
     req: Request,
     res: Response,
     next: NextFunction
 ): void => {
   const user = (req as AuthRequest).user;
-  if (!user || user.role !== 'ADMIN') {
-    next(new UnauthorizedError('Accesso riservato agli amministratori'));
+  if (!user || user.ruolo !== Ruolo.REFERENTE_ACADEMY) {
+    next(new UnauthorizedError('Accesso riservato agli ai referenti academy'));
     return;
   }
   next();

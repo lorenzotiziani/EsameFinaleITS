@@ -1,6 +1,5 @@
 import type { SignOptions } from 'jsonwebtoken';
 
-// In produzione i secret DEVONO arrivare dall'env: niente fallback silenziosi.
 if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET)) {
   throw new Error('JWT_SECRET e JWT_REFRESH_SECRET sono obbligatori in produzione');
 }

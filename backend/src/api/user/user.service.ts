@@ -65,8 +65,8 @@ export class UserService {
     await RefreshTokenModel.revokeByUserId(userId);
   }
 
-  static async getAllUsers(): Promise<UserSafe[]> {
-    const users = await UserModel.findAll();
+  static async getDipendenti(): Promise<UserSafe[]> {
+    const users = await UserModel.findDipendenti();
     return users
   }
 }

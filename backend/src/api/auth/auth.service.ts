@@ -27,10 +27,7 @@ export class AuthService {
         password: hashedPassword,
         nome: data.nome,
         cognome: data.cognome,
-        role: 'USER',
-        // TODO: se il testo richiede l'attivazione via email, rimettere isActive:false
-        // e collegare la rotta di attivazione (activateAccountRequirements è già pronto in auth.dto.ts).
-        isActive: true
+        ruolo: data.ruolo,
       });
     } catch (error: any) {
       // P2002 = violazione vincolo unique su email: copre la race tra
@@ -55,10 +52,6 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedError('Credenziali non valide');
-    }
-
-    if (!user.isActive) {
-      throw new UnauthorizedError('Account non attivato. Controlla la tua email.');
     }
 
     const isValidPassword = await bcrypt.compare(data.password, user.password);
@@ -110,11 +103,6 @@ export class AuthService {
       throw new UnauthorizedError('Utente non trovato');
     }
 
-    if (!user.isActive) {
-      await RefreshTokenModel.revokeByUserId(user.id);
-      throw new UnauthorizedError('Account disattivato');
-    }
-
     await RefreshTokenModel.revokeByToken(token);
 
 
@@ -140,7 +128,7 @@ export class AuthService {
     const payload: JwtPayload = {
       userId: user.id,
       email: user.email,
-      role: user.role!
+      ruolo: user.ruolo!
     };
 
     const accessTokenOptions: jwt.SignOptions = {

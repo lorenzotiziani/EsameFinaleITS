@@ -1,3 +1,4 @@
+import { Ruolo } from "@prisma/client";
 import * as z from "zod"
 
 const passwordRequirements = z.string()
@@ -44,20 +45,13 @@ export const registerRequirements = z.object({
         .max(50, "Il cognome è troppo lungo")
         .trim()
         .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, "Il cognome contiene caratteri non validi"),
+    ruolo: z.enum(Ruolo).nonoptional()
   })
       .refine((data) => data.password === data.confirm, {
         message: "Le password non coincidono",
         path: ["confirm"],
       })
 });
-
-
-export const activateAccountRequirements = z.object({
-  query: z.object({
-    token: z.string().min(1, "Token richiesto")
-  })
-});
-
 
 export const refreshTokenRequirements = z.object({
   body: z.object({

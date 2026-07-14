@@ -18,7 +18,6 @@ const passwordRequirements = z.string()
 
 export const changePasswordRequirements = z.object({
     body: z.object({
-        // La password attuale si confronta con l'hash: basta che non sia vuota.
         currentPassword: z.string().min(1, "Password attuale richiesta"),
         newPassword: passwordRequirements,
     })
